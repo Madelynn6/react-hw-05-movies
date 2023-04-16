@@ -26,6 +26,7 @@ const MovieDetails = () => {
     try {
       const loadedData = await getDataById(id);
       setMovie(loadedData);
+      console.log(movie);
     } catch (error) {
       console.log(error);
     }
@@ -35,7 +36,14 @@ const MovieDetails = () => {
     return <div>Loading...</div>;
   }
 
-  const { poster_path, original_title, release_date, overview, genres } = movie;
+  const {
+    poster_path,
+    original_title,
+    vote_average,
+    release_date,
+    overview,
+    genres,
+  } = movie;
   const date = release_date.slice(0, 4);
 
   return (
@@ -51,6 +59,7 @@ const MovieDetails = () => {
           <h2>
             {original_title} {date}
           </h2>
+          <p>User score: {`${vote_average * 10}%`}</p>
           <h3>Overview</h3>
           <p>{overview}</p>
           <h4>Genres</h4>

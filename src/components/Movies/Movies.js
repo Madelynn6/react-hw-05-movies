@@ -1,34 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getDataByQuery } from 'utils/fetchAPI';
 
 import { Input, Btn, List, StyledLink } from './Movies.styled';
 
 const Movies = () => {
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const movieQuery = searchParams.get('query') ?? '';
 
-  const onSubmit = e => {
-    setSearchParams({ query: e.target.value });
-    e.preventDefault();
+  useEffect(() => {
+    const getMovies = async () => {
+      const queryMovies = await getDataByQuery(movieQuery);
+      setMovies(queryMovies.results);
+    };
+
     getMovies();
+  }, [movieQuery]);
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    setSearchParams({ query: form.elements.search.value });
+    form.reset();
   };
 
-  const onChange = e => {
-    setSearchParams({ query: e.target.value });
-  };
-
-  const getMovies = async () => {
-    const queryMovies = await getDataByQuery(movieQuery);
-    setMovies(queryMovies.results);
-  };
+  if (!movies) {
+    return 'Loading...';
+  }
 
   return (
     <div>
       <h1>MOVIES</h1>
-      <form onSubmit={onSubmit}>
-        <Input type="text" placeholder="Search movie..." onChange={onChange} />
+      <form onSubmit={handleSubmit}>
+        <Input type="text" placeholder="Search movie..." name="search" />
         <Btn type="submit">Search</Btn>
       </form>
       <List>
